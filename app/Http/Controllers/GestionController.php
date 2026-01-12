@@ -9,7 +9,7 @@ class GestionController extends Controller
     public function calcul($nombre) 
     {
         if (!view()->exists('calcul')) {
-            abort(404,'la vue n existe pas !');
+            abort(404);
         }
         return view('calcul',['nombre'=>$nombre]);
     }
