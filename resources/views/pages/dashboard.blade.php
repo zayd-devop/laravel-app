@@ -1,4 +1,4 @@
-resources/views/pages/dashboard.blade.php
+
 @extends('layouts.default')
 
 @section('content')
