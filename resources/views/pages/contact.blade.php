@@ -1,4 +1,4 @@
 @extends('layouts.page_principale')
-
 @section('contenu')
-    <div c></div>
+<p>Contact page</p>
+@endsection

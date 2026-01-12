@@ -6,9 +6,18 @@
     <title>Document</title>
 </head>
 <body>
-    <div>
-        @yield('contenu')
-    </div>
-    <script src="/js/bootstrap.js"></script>
+    <header>
+        <nav>
+            <ul>
+                <li>contact</li>
+                <li>About</li>
+                <li>Home</li>
+            </ul>
+        </nav>
+    </header>
+    @yield('contenu')
+    <footer>
+        <p>copyright Zaid </p>
+    </footer>
 </body>
 </html>
