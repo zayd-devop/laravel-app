@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('acteurs', function (Blueprint $table) {
             $table->id();
+            $table->string('nom');
+            $table->string('prenom');
+            $table->string('pays');
+            $table->date('date_naissance');
+            $table->string('tel');
             $table->timestamps();
         });
     }
