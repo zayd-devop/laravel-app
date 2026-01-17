@@ -83,3 +83,19 @@ Route::get('/ex6-q1',function(){
     $films = DB::table('films')->paginate(10);
     return $films;
 });
+Route::get('/ex6-q2',function(){
+    $films=DB::table('films')->paginate(10,['*'],'page',2);
+    return $films;
+});
+Route::get('/ex7-q1',function(){
+    $joitunre=DB::table('films')->join('participations','films.id','=','participations.films_id')->join('acteurs','participations.acteur_id','=','acteurs.id')->get(['films.titre','acteurs.nom']);
+    return $joitunre;
+});
+Route::get('/ex7-q2',function(){
+    $joitunre=DB::table('acteurs')->join('participations','acteurs.id','=','participations.acteur_id')->join('films','participations.films_id','=','films.id')->where('films.genre','Marvel')->distinct()->get(['acteurs.*']);
+    return $joitunre;
+});
+Route::get('/ex7-q3',function(){
+    $jointure = DB::table('participations')->join('films','participations.films_id','=','films.id')->join('acteurs','participations.acteur_id','=','acteurs.id')->get(['films.titre','acteurs.nom','participations.role']);
+    return $jointure;
+});
