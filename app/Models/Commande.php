@@ -8,4 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Commande extends Model
 {
     use HasFactory;
+    protected $fillable = [
+    'id', 'date', 'client_id', 'image' // Ajout de 'image'
+];
 }

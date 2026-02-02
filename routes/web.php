@@ -17,4 +17,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::resource('commande', CommandeController::class);
+
+Route::get('commandes/download/{id}', [CommandeController::class, 'download'])
+    ->name('commandes.download');
+    
+Route::resource('commandes', CommandeController::class);

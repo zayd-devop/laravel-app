@@ -1,73 +1,101 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Commande;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage; // IMPORTANT
 
 class CommandeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $Commandes = Commande::all();
-        return view('commandes.index',compact('Commandes'));
+        $commandes = Commande::all();
+        return view('commandes.index', compact('commandes'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-       return view('commandes.create');
+        return view('commandes.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // SAVE : Enregistrement avec Image
     public function store(Request $request)
     {
-        Commande::create([
-            'id'=>$request->id,
-            'date'=>$request->date,
-            'client_id'=>$request->client_id
+        // 1. Validation (Optionnel mais recommandé)
+        $request->validate([
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // ou 'file' pour tout type
         ]);
+
+        $input = $request->all();
+
+        // 2. Traitement de l'upload
+        if ($request->hasFile('image')) {
+            // Stocke le fichier dans le dossier 'storage/app/public/commandes'
+            // et retourne le chemin hashé
+            $path = $request->file('image')->store('commandes', 'public');
+            $input['image'] = $path;
+        }
+
+        Commande::create($input);
+
         return redirect()->route('commandes.index')
-            ->with('success','Commamnde Ajoute !');
+            ->with('success', 'Commande ajoutée avec image !');
     }
 
-    /**
-     * Display the specified resource.
-     */
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Commande $Commandes)
+    public function edit(Commande $commande) 
     {
-        return view('commandes.edit', ['commande' => $Commandes]); 
+        return view('commandes.edit', compact('commande'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Commande $Commandes)
+    // UPDATE : Modification avec remplacement d'image
+    public function update(Request $request, Commande $commande)
     {
-        $Commandes->id = $request->id;
-        $Commandes->date = $request->date;
-        $Commandes->client_id = $request->client_id;
-        $Commandes->save(); 
-        return redirect()->route('stagiaires.index'); 
+        $input = $request->all();
+
+        if ($request->hasFile('image')) {
+            // 1. Supprimer l'ancienne image si elle existe
+            if ($commande->image) {
+                Storage::disk('public')->delete($commande->image);
+            }
+            
+            // 2. Uploader la nouvelle
+            $path = $request->file('image')->store('commandes', 'public');
+            $input['image'] = $path;
+        } else {
+            // Si pas de nouvelle image, on garde l'ancienne (ne pas écraser par null)
+            unset($input['image']); 
+        }
+
+        $commande->update($input);
+
+        return redirect()->route('commandes.index')
+            ->with('success', 'Commande modifiée !');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Commande $Commandes)
-    {    
-        $Commandes->delete(); 
+    public function destroy(Commande $commande)
+    {
+        // Supprimer l'image du disque avant de supprimer la ligne en BD
+        if ($commande->image) {
+            Storage::disk('public')->delete($commande->image);
+        }
+
+        $commande->delete();
         return redirect()->route('commandes.index');
     }
+
+    // DOWNLOAD : Télécharger le fichier
+    public function download($id)
+    {
+        $commande = Commande::findOrFail($id);
+        
+        if (!$commande->image) {
+            return back()->with('error', 'Aucun fichier associé.');
+        }
+    // On construit le chemin complet vers le dossier 'public/storage'
+        $path = public_path('storage/' . $commande->image);
+
+        return response()->download($path);
+    }
+
+    
 }
