@@ -8,7 +8,7 @@
 <div class="container mt-5">
     <h2>Liste des Commandes</h2>
     <a href="{{ route('commandes.create') }}" class="btn btn-success mb-3">Ajouter une commande</a>
-
+    <a href="{{ route('commandes.search') }}" class="btn btn-primary mb-3">🔍 Rechercher / Filtrer </a>
     @if ($message = Session::get('success'))
         <div class="alert alert-success">{{ $message }}</div>
     @endif
